@@ -1,0 +1,107 @@
+# ---------------------
+# Global Ruff Settings
+# ---------------------
+fix = false
+indent-width = 4
+line-length = 120                    # Wider code readability
+target-version = "py314"             # Set your Python version
+preview = false                      # Disable experimental rules (safe default)
+
+extend-exclude = [
+  ".git", ".venv", "venv", "env",
+  "build", "dist", "__pycache__",
+  ".mypy_cache", ".ruff_cache", ".pytest_cache",
+  ".run", ".idea", ".github", "__pycache__",
+]
+
+[format]
+indent-style = "space"               # Use spaces over tabs
+quote-style = "double"               # Use double quotes consistently
+line-ending = "auto"                 # Match the OS default (LF/CRLF)
+docstring-code-format = true         # Format code examples inside docstrings
+docstring-code-line-length = 99      # Tighter line length for embedded docs
+skip-magic-trailing-comma = false    # Add trailing commas when useful
+
+
+[lint]
+
+select = [
+  "E",      # pycodestyle: code formatting
+  "F",      # pyflakes: undefined vars, unused imports
+  "B",      # bugbear: common bugs and anti-patterns
+  "I",      # import sorting (built-in, replaces isort)
+  "N",      # pep8-naming: function/class naming
+  "D",      # pydocstyle: docstring format
+  "UP",     # pyupgrade: modernize Python syntax
+  "C4",     # flake8-comprehensions: simplify comprehensions
+  "SIM",    # flake8-simplify: remove redundant code
+  "TID",    # tidy imports: disallow relative imports
+  "RUF",    # Ruff-native: performance, cleanup
+]
+
+# Ignore overly strict or stylistic docstring rules
+ignore = [
+  "B013",    # Allow One length tuple in the exception handlers
+  "D100",    # Missing docstring in public modules
+  "D101",    # Missing docstring in public class
+  "D102",    # Missing docstring in public method
+  "D103",    # Missing docstring in public function
+  "D104",    # Missing docstring in public packages
+  "D105",    # Missing docstring in magic methods
+  "D107",    # Missing docstring in __init__
+  "D203",    # 1 blank line required before class docstring
+  "D205",    # 1 blank line required between summary line and description
+  "D212",    # Multi-line docstring summary should start at the first line
+  "D213",    # Multi-line docstring summary should start at the second line
+  "D401",    # The first line should be in imperative mode
+  "D404",    # The First word of docstring should not be "This"
+  "D405",    # Section name should be properly capitalized
+  "D406",    # The section name should end with a newline
+  "D407",    # Missing dashed underline after section
+  "D408",    # Section underline is too short
+  "D409",    # Section underline is too long
+  "D410",    # Missing blank line after a section
+  "D411",    # Missing blank line before a section
+  "D413",    # Missing blank line after the last section
+  "N812",    # Allow lowercase imports to be aliased as non-lowercase
+  "N802",    # Allow mixed case function name
+  "N803",    # Allow mixed case variable name in function argumets
+  "N8",      # Aloow all naming violations
+  "ANN",     # Allow all missing annotations
+  "ERA001",  # Keep commented out codes, linter hack: write comments docstring
+  "T201",    # Allow print statements
+  "T203",    # Allow pprint statements
+  "Q000",    # Allow single quotes
+  "F401",    # Keep unused imports **for now**
+  "F841",    # Allow unused variables **for now**
+  "ANN204",  # Docstring missing in special __dunder__ method
+  "COM812",  # Missing trailing comma in a multi-line collection
+  "Q000",    # Allow quotation violation
+  "Q003",    # Allow quotation violation
+  "S104",    # Allow binding to all interfaces (0.0.0.0)
+  "PERF401", # Ignore suggestion to use `extend` to create a transformed list,
+  "INP001",  # Ignore implcit namespace package
+]
+
+fixable = ["ALL"]                    # Allow Ruff to fix all enabled rules
+unfixable = []                       # Block nothing from fixing
+
+# Import Sorting
+[lint.isort]
+length-sort = true
+order-by-type = true                 # Group by type (class, func, const, etc.)
+combine-as-imports = true            # Prefer: `import mod as alias` (one line)
+force-single-line = false            # Allow grouping imports on one line
+section-order = [
+  "future", "standard-library", "third-party", "first-party", "local-folder"
+]
+
+[lint.flake8-annotations]
+allow-star-arg-any = true            # Allow `*args: Any` and `**kwargs: Any`
+
+[lint.pep8-naming]
+ignore-names = ["foo", "bar"]        # Ignore naming rules for these names
+
+# Docstring Style
+[lint.pydocstyle]
+convention = "google"                # Options: google, numpy, pep257

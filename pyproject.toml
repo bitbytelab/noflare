@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+[project]
+name = "noflare"
+dynamic = ["version"]
+description = """alternative to flaresolverr and Byparr. Once both of those stopped working for me, the snake convinced me to write this one."""
+readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+requires-python = ">=3.11"
+keywords = ["bitbytelab", "noflare", "flare", "flaresolverr", "Byparr", "cloudflare bypass", "bot detection bypass"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+authors = [
+  { name = "Hasan Rasel", email = "rrss.mahmud@gmail.com" },
+]
+
+maintainers = [
+  { name = "Hasan Rasel", email = "rrss.mahmud@gmail.com" },
+]
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "nodriver",
+    "python-dotenv",
+]
+
+[project.urls]
+Homepage = "https://noflare.github.io/"
+GitHub = "https://github.com/bitbytelab/noflare"
+PyPI = "https://pypi.org/project/noflare/"
+
+Author-GitHub = "https://github.com/rsmahmud"
+Author-LinkedIn = "https://www.linkedin.com/in/rsmahmud"
+Author-Portfolio = "https://rsmahmud.github.io/"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
+only-include = ["src/noflare"]
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+    "src",
+    "README.md",
+    "pyproject.toml",
+    ".ruff.toml"
+]
+
+[project.scripts]
+noflare = "noflare.__main__"
