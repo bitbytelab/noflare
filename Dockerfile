@@ -1,9 +1,11 @@
 FROM python:3.11-slim
 
-ENV PYTHONUNBUFFERED=1
-ENV PORT=8191
-ENV HEADLESS=true
-ENV DATA_DIR=/data/noflare
+ENV PORT=8191 \
+    HEADLESS=true \
+    DATA_DIR=/data/noflare \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_DYNAMIC_VERSIONING_BYPASS=0.0.0-docker
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
