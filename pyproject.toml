@@ -56,10 +56,14 @@ only-include = ["src/noflare"]
 only-include = [
     "src",
     "uv.lock",
+    "uv.lock",
     "README.md",
     ".gitignore",
     ".ruff.toml",
     "pyproject.toml"
+    ".gitignore",
+    ".ruff.toml"
+    "pyproject.toml",
 ]
 
 [project.scripts]
