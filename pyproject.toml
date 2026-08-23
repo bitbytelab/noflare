@@ -55,9 +55,11 @@ only-include = ["src/noflare"]
 [tool.hatch.build.targets.sdist]
 only-include = [
     "src",
+    "uv.lock",
     "README.md",
-    "pyproject.toml",
-    ".ruff.toml"
+    ".gitignore",
+    ".ruff.toml",
+    "pyproject.toml"
 ]
 
 [project.scripts]
