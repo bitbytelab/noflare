@@ -30,6 +30,5 @@ jobs:
           uv build
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.6.0
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --skip-existing dist/*
