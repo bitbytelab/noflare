@@ -24,9 +24,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y --no-install-recommends google-chrome-stable \
+RUN wget -q -O - https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && dpkg -i ./google-chrome-stable_current_amd64.deb \
+    && apt-get install -y --no-install-recommends -f \
+    && rm ./google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
