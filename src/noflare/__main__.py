@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import os
 import argparse
+
 import uvicorn
 
 DEFAULT_PORT = int(os.getenv("PORT", "8191"))
@@ -28,7 +29,6 @@ def parse_args(argv=None):
 def main(argv=None):
 	args = parse_args(argv)
 
-	# Map CLI args to environment variables consumed by the package
 	if args.headless:
 		os.environ["HEADLESS"] = "true"
 	if args.data_dir:

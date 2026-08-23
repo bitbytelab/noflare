@@ -61,4 +61,4 @@ only-include = [
 ]
 
 [project.scripts]
-noflare = "noflare.__main__"
+noflare = "noflare.__main__:main"
