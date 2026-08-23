@@ -24,7 +24,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Google Chrome stable
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update && apt-get install -y --no-install-recommends google-chrome-stable \
@@ -32,10 +31,8 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 
 WORKDIR /app
 
-# Install the package from source. This assumes pyproject.toml is configured.
-COPY pyproject.toml .
-COPY src/ ./src
-COPY README.md LICENSE .
+COPY src/ /app/src
+COPY pyproject.toml README.md LICENSE /app/
 
 RUN pip install --upgrade pip setuptools wheel \
     && pip install --no-cache-dir .
