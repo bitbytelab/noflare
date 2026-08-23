@@ -5,7 +5,7 @@ ENV PORT=8191 \
     DATA_DIR=/data/noflare \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_DYNAMIC_VERSIONING_BYPASS=0.0.0-docker
+    UV_DYNAMIC_VERSIONING_BYPASS=1.0.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
