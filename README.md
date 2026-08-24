@@ -34,8 +34,8 @@ See `.env.example` for a full list. Notable variables:
 - `MAX_TABS` - Max concurrent Chromium tabs (default: `10`)
 - `HEADLESS` - `true`/`false` to run Chromium headless (default: `false`)
 - `DATA_DIR` - Path to persistent user-data directory (default: `~/.noflare/data`)
-- `LANGUAGE` - Browser language/locale (default: `en-US`)
 - `PROXY_SERVER` - Proxy server URL (e.g. `http://1.2.3.4:3128`)
+- `BROWSER_LOCALE` - Browser language/locale (default: `en-US`)
 
 ### Docker
 Build and run locally with Docker:
@@ -72,7 +72,7 @@ Use the provided `compose.yml` for local development. Copy `.env.example` to `.e
 ## License
 MIT - see `LICENSE` for details.
 
-Credits & Dependencies
+## Credits & Dependencies
 - FastAPI - high-performance async API framework
 - nodriver - Chromium automation backend (undetected/stealth)
 - uvicorn - ASGI server
