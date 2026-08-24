@@ -21,7 +21,7 @@ PROXY_USERNAME = None
 PROXY_PASSWORD = None
 BROWSER_LOCALE = "en-US"
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
