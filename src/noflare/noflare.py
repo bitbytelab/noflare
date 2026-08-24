@@ -13,11 +13,11 @@ from pydantic import BaseModel
 # Global Default Config
 MAX_TABS = 10
 HEADLESS = False
-LANGUAGE = 'en-US'
 DATA_DIR = Path.home() / '.noflare/data'
 PROXY_SERVER = None
 PROXY_USERNAME = None
 PROXY_PASSWORD = None
+BROWSER_LOCALE = 'en-US'
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -31,7 +31,7 @@ tab_sem: asyncio.Semaphore = None
 
 def build_browser_config() -> uc.Config:
     config = uc.Config()
-    config.lang = f"{os.getenv('LANGUAGE', LANGUAGE)}"
+    config.lang = f"{os.getenv('BROWSER_LOCALE', BROWSER_LOCALE)}"
     config.user_data_dir = Path(os.getenv("DATA_DIR", DATA_DIR))
     config.headless = str(os.getenv("HEADLESS", HEADLESS)).lower() == "true"
 
