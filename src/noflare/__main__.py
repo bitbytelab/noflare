@@ -20,7 +20,7 @@ def parse_args(argv=None):
 	p.add_argument("--port", type=int, default=DEFAULT_PORT, help="Port to listen on")
 	p.add_argument("--headless", action="store_true", help="Run browser in headless mode")
 	p.add_argument("--data-dir", dest="data_dir", help="User data directory for browser profile")
-	p.add_argument("--lang", dest="lang", help="Language/locale to use, e.g. en-US")
+	p.add_argument("--lang", "--locale", "--browser-locale", dest="lang", help="Language/locale to use, e.g. en-US")
 	p.add_argument("--proxy", dest="proxy", help="Proxy server URL (e.g. http://host:port)")
 	p.add_argument("--debug", action="store_true", help="Run with reload and debug logging")
 	return p.parse_args(argv)
@@ -34,11 +34,13 @@ def main(argv=None):
 	if args.data_dir:
 		os.environ["DATA_DIR"] = args.data_dir
 	if args.lang:
-		os.environ["LANGUAGE"] = args.lang
+		os.environ["BROWSER_LOCALE"] = args.lang
 	if args.proxy:
 		os.environ["PROXY_SERVER"] = args.proxy
 
 	log_level = "debug" if args.debug else os.getenv("LOG_LEVEL", "info").lower()
+	if args.debug:
+		os.environ["HEADLESS"] = "false"
 
 	uvicorn.run(
 		"noflare.noflare:app",
