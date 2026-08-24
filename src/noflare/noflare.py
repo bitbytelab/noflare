@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import asyncio
 import logging
 from pathlib import Path
@@ -9,15 +10,18 @@ from contextlib import asynccontextmanager
 import nodriver as uc
 from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel
+from fastapi.responses import JSONResponse
 
 # Global Default Config
 MAX_TABS = 10
 HEADLESS = False
-DATA_DIR = Path.home() / '.noflare/data'
+DATA_DIR = Path.home() / ".noflare/data"
 PROXY_SERVER = None
 PROXY_USERNAME = None
 PROXY_PASSWORD = None
-BROWSER_LOCALE = 'en-US'
+BROWSER_LOCALE = "en-US"
+
+__version__ = "1.0.2"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -120,19 +124,29 @@ async def wait_for_bypass(tab: uc.Tab, target_url: str, timeout: int = 45) -> di
     user_agent = await tab.evaluate("navigator.userAgent")
 
     return {
-        "status": "ok",
         "url": tab.target.url,
-        "solution": {
-            "userAgent": user_agent,
-            "response": content,
-            "cookies": [c.to_json() for c in cookies]
-        }
+        "status": 200,
+        "headers": {},
+        "response": content,
+        "cookies": [c.to_json() for c in cookies],
+        "userAgent": user_agent
     }
 
 @app.post("/v1")
 async def solve(req: SolveRequest):
+    start_timestamp = int(time.time() * 1000)
+
     if not browser:
-        raise HTTPException(status_code=500, detail="Browser instance is offline")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "message": "Browser instance is offline",
+                "startTimestamp": start_timestamp,
+                "endTimestamp": int(time.time() * 1000),
+                "version": "1.0.0"
+            }
+        )
 
     async with tab_sem:
         tab = None
@@ -140,18 +154,44 @@ async def solve(req: SolveRequest):
             logging.info(f"Dispatching target: {req.url}")
             tab = await browser.get(req.url, new_tab=True)
 
-            result = await asyncio.wait_for(
-                wait_for_bypass(tab, req.url, req.timeout),
+            solution = await asyncio.wait_for(
+                wait_for_bypass(tab, req.url),
                 timeout=req.timeout
             )
-            return result
+
+            return {
+                "status": "ok",
+                "message": "Challenge solved!",
+                "startTimestamp": start_timestamp,
+                "endTimestamp": int(time.time() * 1000),
+                "version": __version__,
+                "solution": solution
+            }
 
         except TimeoutError:
             logging.error(f"Timeout solving {req.url}")
-            raise HTTPException(status_code=504, detail="Timeout waiting for bypass") from TimeoutError
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "status": "error",
+                    "message": "Error: Timeout waiting for bypass",
+                    "startTimestamp": start_timestamp,
+                    "endTimestamp": int(time.time() * 1000),
+                    "version": "1.0.0"
+                }
+            )
         except (Exception,) as _e:
             logging.error(f"Fatal error on {req.url}: {_e}", exc_info=True)
-            raise HTTPException(status_code=500, detail=str(_e)) from _e
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "status": "error",
+                    "message": f"Error: {_e!s}",
+                    "startTimestamp": start_timestamp,
+                    "endTimestamp": int(time.time() * 1000),
+                    "version": "1.0.0"
+                }
+            )
         finally:
             if tab:
                 try:
