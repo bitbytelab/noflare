@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.0"
+	__version__ = "1.1.1"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
