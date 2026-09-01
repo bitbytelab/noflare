@@ -16,19 +16,16 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 
-# --- Thread Pool Sizing ---
-# Threads are cheap for Python, but Chrome instances are heavy (~150-250MB RAM each).
-# Keep the cap based on what your server's RAM can handle.
-MAX_WORKERS = int(os.getenv("MAX_CONCURRENT_INSTANCES", "5"))
-HEADLESS = str(os.getenv("HEADLESS", "true")).lower() == "true"
-PROXY_SERVER = os.getenv("PROXY_SERVER", None)
-BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
-
 __version__ = "1.0.6"
 
-_fmt_console="%(levelname)-8s- %(threadName)s - %(message)s"
-_fmt_file="%(threadName)s - %(asctime)s - %(levelname)s - %(message)s"
-logging.basicConfig(level=logging.INFO, format=_fmt_console)
+# --- Thread Pool Sizing ---
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
+HEADLESS = str(os.getenv("HEADLESS", "true")).lower() == "true"
+BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
+PROXY_SERVER = os.getenv("PROXY_SERVER", None)
+
+_fmt = "%(asctime)s %(threadName)s %(levelname)-8s - %(message)s"
+logging.basicConfig(level=logging.INFO, format=_fmt, datefmt="%X")
 for noisy_logger in ("nodriver", "fastapi"):logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 
 
@@ -198,7 +195,7 @@ async def solve(req: SolveRequest):
     start_timestamp = int(time.time() * 1000)
 
     try:
-        logging.info(f"Received request for {req.url} timeout={req.timeout}. Dispatching to thread pool...")
+        logging.info(f"Received request for '{req.url}'' timeout={req.timeout} Dispatching to thread pool...")
         
         loop = asyncio.get_running_loop()
         # run_in_executor uses the ThreadPoolExecutor gracefully
