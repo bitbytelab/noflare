@@ -1,0 +1,19 @@
+services:
+  noflare:
+    image: hsnrsl/noflare:latest
+    restart: unless-stopped
+    container_name: noflare
+    ports: ['8191:8191']
+    environment:
+      PORT: 8191
+      HOST: 0.0.0.0
+      MAX_WORKERS: 5
+      HEADLESS: 'true'
+      BROWSER_LOCALE: en-US
+    deploy:
+      replicas: 1
+      restart_policy: { condition: any, delay: 10s, window: 60s }
+      update_config: { order: stop-first, parallelism: 1, failure_action: rollback, monitor: 1m }
+      resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { cpus: '0.5', memory: 256M } }
+    healthcheck: { test: curl -fs http://127.0.0.1:8191 || exit 1, interval: 90s  }
+    logging: { driver: local, options: { max-size: 1m, max-file: 5 } }

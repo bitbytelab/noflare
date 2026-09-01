@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   noflare:
     build: .
@@ -13,6 +11,6 @@ services:
       - ./data:/data/noflare
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8191/ || exit 1"]
-      interval: 30s
+      interval: 60s
       timeout: 10s
       retries: 3

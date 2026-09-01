@@ -31,8 +31,8 @@ NoFlare is a small, async-first Python service that automates solving Cloudflare
 ### Environment variables
 See `.env.example` for a full list. Notable variables:
 - `PORT` - HTTP port (default: `8191`)
-- `MAX_TABS` - Max concurrent Chromium tabs (default: `10`)
-- `HEADLESS` - `true`/`false` to run Chromium headless (default: `false`)
+- `MAX_WORKERS` - Max concurrent Chromium tabs (default: `5`)
+- `HEADLESS` - `true`/`false` to run Chromium headless (default: `true`)
 - `DATA_DIR` - Path to persistent user-data directory (default: `~/.noflare/data`)
 - `PROXY_SERVER` - Proxy server URL (e.g. `http://1.2.3.4:3128`)
 - `BROWSER_LOCALE` - Browser language/locale (default: `en-US`)
@@ -49,7 +49,7 @@ docker run --rm -p 8191:8191 \
 ```
 
 ### Docker Compose
-Use the provided `compose.yml` for local development. Copy `.env.example` to `.env` and edit values before launching.
+Use the provided [`compose.yml`](compose.yml) for local development. Copy [`.env.example`](.env.example) to `.env` and edit values before launching.
 
 ### Development
 - Python 3.11+
