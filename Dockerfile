@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxss1 \
     libasound2 \
     xvfb \
+    xauth \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
