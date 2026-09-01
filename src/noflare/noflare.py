@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.0.8"
+	__version__ = "1.1.0"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -227,3 +227,11 @@ async def solve(req: SolveRequest):
                 "version": __version__
             }
         )
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "ok",
+        "timestamp": int(time.time() * 1000),
+        "version": __version__
+    }
