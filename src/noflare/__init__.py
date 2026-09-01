@@ -12,7 +12,7 @@ from importlib.metadata import PackageNotFoundError, version
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.2"
+	__version__ = "1.1.3"
 
 from .noflare import app
 

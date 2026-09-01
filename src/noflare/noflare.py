@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.2"
+	__version__ = "1.1.3"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -29,7 +29,7 @@ HEADLESS = str(os.getenv("HEADLESS", "true")).lower() == "true"
 BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
 PROXY_SERVER = os.getenv("PROXY_SERVER", None)
 
-_fmt = "%(levelname)s: %(threadName)s - %(message)s"
+_fmt = "%(levelname)-8s: %(threadName)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=_fmt)
 for noisy_logger in ("nodriver", "fastapi"):logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 
@@ -113,9 +113,9 @@ async def async_worker_task(url: str, timeout: int) -> dict:
                 except TimeoutError:
                     pass
                 try:
-                    logging.debug(f"[{url}] looking for verify you are")
+                    logging.debug(f"[{url}] looking for verify you are human checkbox")
                     if (await tab.find_all("verify you are", timeout=3.0)):
-                        logging.debug(f"[{url}] FOUND verify you are")
+                        logging.info(f"[{url}] FOUND verify you are human checkbox")
                         await (await tab.find("verify you are", timeout=3.0)).mouse_click()
                 except TimeoutError:
                     pass
@@ -145,17 +145,17 @@ async def async_worker_task(url: str, timeout: int) -> dict:
                         break
                     else:
                         # <input type="checkbox" aria-label="Verify you are human">
-                        logging.debug(f"[{url}] looking for verify you are human checkbox")
+                        logging.info(f"[{url}] looking for verify you are human checkbox")
                         try:
                             cb = await tab.find("Verify you are", timeout=5.0)
                             if cb:
-                                logging.info(f"[{url}] Found and attempting checkbox click")
+                                logging.info(f"[{url}] Found and attempting 'Verify you are human' checkbox click")
                                 await (await tab.find("Verify you are", timeout=5.0)).mouse_click()
                                 # await tab.verify_cf()
                         except TimeoutError:
                             pass
                         else:
-                            logging.info(f"[{url}] CLICKED verify you are human checkbox")
+                            logging.info(f"[{url}] CLICKED 'Verify you are human checkbox")
 
             except Exception as _e:
                 logging.info(f"[{url}] Skipped Error: {_e}")
@@ -178,14 +178,14 @@ async def async_worker_task(url: str, timeout: int) -> dict:
             "userAgent": clean_ua
         }
 
-    except Exception as e:
-        return {"error": str(e)}
+    except Exception as _e:
+        return {"error": str(_e)}
 
     finally:
         if browser:
             with suppress(Exception):
                 browser.stop()
-        await asyncio.sleep(1)
+            await asyncio.sleep(1)
         shutil.rmtree(temp_dir, ignore_errors=True)
 
 def worker_entrypoint(url: str, timeout: int) -> dict:
@@ -198,7 +198,7 @@ async def solve(req: SolveRequest):
     start_timestamp = int(time.time() * 1000)
 
     try:
-        logging.info(f"Received request for '{req.url}'' timeout={req.timeout} Dispatching to thread pool...")
+        logging.info(f"Solving '{req.url}' timeout={req.timeout}")
 
         loop = asyncio.get_running_loop()
         solution = await loop.run_in_executor(thread_pool, worker_entrypoint, req.url, req.timeout)
