@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 
 ENV PORT=8191 \
-    HEADLESS=true \
+    HEADLESS=false \
     DATA_DIR=/data/noflare \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -44,4 +44,4 @@ EXPOSE 8191
 
 VOLUME ["/data/noflare"]
 
-CMD ["python", "-m", "noflare"]
+CMD ["xvfb-run", "-a", "python", "-m", "noflare"]

@@ -42,7 +42,6 @@ class SolveRequest(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global thread_pool
-    # Initialize the Thread Pool
     thread_pool = ThreadPoolExecutor(max_workers=MAX_WORKERS, thread_name_prefix="ChromeWorker")
     logging.info(f"Initialized ThreadPoolExecutor with {MAX_WORKERS} concurrent workers.")
 
@@ -62,6 +61,7 @@ def create_browser_config(temp_profile_dir: str, debug_port: int) -> uc.Config:
     config = uc.Config()
     config.lang = BROWSER_LOCALE
     config.headless = HEADLESS
+    config.no_sandbox = True
     config.user_data_dir = temp_profile_dir
     config.port = debug_port
 

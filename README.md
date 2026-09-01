@@ -32,7 +32,7 @@ NoFlare is a small, async-first Python service that automates solving Cloudflare
 See `.env.example` for a full list. Notable variables:
 - `PORT` - HTTP port (default: `8191`)
 - `MAX_WORKERS` - Max concurrent Chromium tabs (default: `5`)
-- `HEADLESS` - `true`/`false` to run Chromium headless (default: `true`)
+- `HEADLESS` - `true`/`false` to run Chromium headless (default: `false`)
 - `DATA_DIR` - Path to persistent user-data directory (default: `~/.noflare/data`)
 - `PROXY_SERVER` - Proxy server URL (e.g. `http://1.2.3.4:3128`)
 - `BROWSER_LOCALE` - Browser language/locale (default: `en-US`)
