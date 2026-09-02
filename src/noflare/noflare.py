@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.6"
+	__version__ = "1.1.7"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -29,7 +29,7 @@ HEADLESS = str(os.getenv("HEADLESS", "true")).lower() == "true"
 BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
 PROXY_SERVER = os.getenv("PROXY_SERVER", None)
 
-_fmt = "%(levelname)-8s: %(threadName)s - %(message)s"
+_fmt = "%(levelname)-9s %(threadName)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=_fmt)
 for noisy_logger in ("nodriver", "fastapi"):logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 

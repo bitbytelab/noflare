@@ -5,7 +5,7 @@ ENV PORT=8191 \
     PYTHONUNBUFFERED=1 \
     DATA_DIR=/data/noflare \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_DYNAMIC_VERSIONING_BYPASS=1.1.6 \
+    UV_DYNAMIC_VERSIONING_BYPASS=1.1.7 \
     DISPLAY=:99
 
 # Combine apt installations to reduce layers and install dumb-init for PID 1 handling
@@ -38,8 +38,8 @@ WORKDIR /app
 COPY src/ /app/src
 COPY pyproject.toml README.md LICENSE /app/
 
-RUN pip install --upgrade pip setuptools wheel \
-    && pip install --no-cache-dir .
+RUN pip install -U pip setuptools wheel --root-user-action=ignore \
+    && pip install --no-cache-dir -e . --root-user-action=ignore
 
 EXPOSE 8191
 
@@ -47,4 +47,4 @@ VOLUME ["/data/noflare"]
 
 ENTRYPOINT ["dumb-init", "--"]
 
-CMD ["xvfb-run", "-a", "-s", "-screen 0 1280x1024x24", "python", "-m", "noflare"]
+CMD ["sh", "-c", "if [ \"$HEADLESS\" = \"false\" ]; then exec xvfb-run -a -s \"-screen 0 1280x1024x24\" python -m noflare; else exec python -m noflare; fi"]

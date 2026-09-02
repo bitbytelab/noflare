@@ -15,5 +15,5 @@ services:
       restart_policy: { condition: any, delay: 10s, window: 60s }
       update_config: { order: stop-first, parallelism: 1, failure_action: rollback, monitor: 1m }
       resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { cpus: '0.5', memory: 256M } }
-    healthcheck: { test: curl -fs http://127.0.0.1:8191/health || exit 1, interval: 90s  }
+    healthcheck: { test: curl -fs http://127.0.0.1:8191/health | grep -q "ok" || exit 1, interval: 90s  }
     logging: { driver: local, options: { max-size: 1m, max-file: 5 } }
