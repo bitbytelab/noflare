@@ -13,14 +13,14 @@ from concurrent.futures import ThreadPoolExecutor
 from importlib.metadata import PackageNotFoundError, version
 
 import nodriver as uc
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.8"
+	__version__ = "1.1.9"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -33,17 +33,15 @@ _fmt = "%(levelname)-9s %(threadName)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=_fmt)
 for noisy_logger in ("nodriver", "fastapi"):logging.getLogger(noisy_logger).setLevel(logging.WARNING)
 
-
-class SolveRequest(BaseModel):
+class SolveReq(BaseModel):
     url: str
-    timeout: int = 55
-
+    timeout: int = 95
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global thread_pool
     thread_pool = ThreadPoolExecutor(max_workers=MAX_WORKERS, thread_name_prefix="ChromeWorker")
-    logging.info(f"Initialized ThreadPoolExecutor with {MAX_WORKERS} concurrent workers.")
+    logging.info(f"NoFlare v{__version__} Initialized ThreadPoolExecutor with {MAX_WORKERS} workers.")
 
     yield
 
@@ -85,7 +83,7 @@ async def async_worker_task(url: str, timeout: int) -> dict:
         await asyncio.sleep(random.uniform(0.5, 1.5))
 
         debug_port = get_free_port()
-        browser = await uc.start(config=create_browser_config(temp_dir, debug_port), no_sandbox=True)
+        browser = await uc.start(config=create_browser_config(temp_dir, debug_port))
         tab = await browser.get("about:blank")
 
         raw_ua = await tab.evaluate("navigator.userAgent")
@@ -194,14 +192,20 @@ def worker_entrypoint(url: str, timeout: int) -> dict:
 
 @app.post("/")
 @app.post("/v1")
-async def solve(req: SolveRequest):
+async def solve(
+    req: Request,
+    q: SolveReq,
+):
     start_timestamp = int(time.time() * 1000)
-
+    
+    x_forward = req.headers.get("x-forwarded-for")
+    origin_ip = x_forward.split(",").strip() if x_forward else req.headers.get("x-real-ip", req.client.host)
+    
     try:
-        logging.info(f"Solving '{req.url}' timeout={req.timeout}")
+        logging.info(f"Solving '{q.url}' timeout={q.timeout} from {origin_ip}")
 
         loop = asyncio.get_running_loop()
-        solution = await loop.run_in_executor(thread_pool, worker_entrypoint, req.url, req.timeout)
+        solution = await loop.run_in_executor(thread_pool, worker_entrypoint, q.url, q.timeout)
 
         if "error" in solution:
             raise Exception(solution["error"])
@@ -216,7 +220,7 @@ async def solve(req: SolveRequest):
         }
 
     except Exception as _e:
-        logging.error(f"Failed on {req.url}: {_e!s}")
+        logging.error(f"Failed on {q.url}: {_e!s}")
         return JSONResponse(
             status_code=500,
             content={
@@ -236,7 +240,7 @@ async def health_check():
         "version": __version__,
         "headless": HEADLESS,
         "max_workers": MAX_WORKERS,
-        "timestamp": int(time.time() * 1000),
+        "timestamp": time.time().strftime("%Y %b %d %I:%M:%S %p"),
         "browser_locale": BROWSER_LOCALE,
         "proxy_server": PROXY_SERVER
     }

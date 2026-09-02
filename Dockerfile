@@ -5,7 +5,7 @@ ENV PORT=8191 \
     PYTHONUNBUFFERED=1 \
     DATA_DIR=/data/noflare \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_DYNAMIC_VERSIONING_BYPASS=1.1.8 \
+    UV_DYNAMIC_VERSIONING_BYPASS=1.1.9 \
     DISPLAY=:99
 
 # Combine apt installations to reduce layers and install dumb-init for PID 1 handling
@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -r appuser && useradd -r -g appuser -ms /bin/bash appuser
 WORKDIR /app
 
 COPY src/ /app/src
@@ -41,6 +42,8 @@ COPY pyproject.toml README.md LICENSE /app/
 RUN pip install -U pip setuptools wheel --root-user-action=ignore \
     && pip install --no-cache-dir -e . --root-user-action=ignore
 
+RUN mkdir -p /data/noflare && chown -R appuser:appuser /data/noflare /app
+USER appuser
 EXPOSE 8191
 
 VOLUME ["/data/noflare"]
