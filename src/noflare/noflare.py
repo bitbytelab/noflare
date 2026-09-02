@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.2.2"
+	__version__ = "1.2.3"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -29,6 +29,7 @@ MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
 BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
 HEADLESS = str(os.getenv("HEADLESS", "false")).lower() == "true"
 NO_SANDBOX = str(os.getenv("NO_SANDBOX", "false")).lower() == "true"
+SAVE_SS = str(os.getenv("SAVE_SS", "false")).lower() == "true"
 
 _fmt = "%(levelname)-9s %(threadName)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=_fmt)
@@ -64,10 +65,14 @@ def create_browser_config(temp_profile_dir: str, debug_port: int) -> uc.Config:
     config.port = debug_port
 
     config.add_argument("--disable-gpu")
-    config.add_argument("--disable-dev-shm-usage")
     config.add_argument("--no-first-run")
     config.add_argument("--no-service-autorun")
     config.add_argument("--password-store=basic")
+    config.add_argument("--disable-dev-shm-usage")
+
+    if NO_SANDBOX:
+        config.add_argument("--no-sandbox")
+        config.add_argument("--disable-setuid-sandbox")
 
     if PROXY_SERVER:
         config.add_argument(f"--proxy-server={PROXY_SERVER}")
@@ -84,7 +89,10 @@ async def async_worker_task(url: str, timeout: int) -> dict:
         await asyncio.sleep(random.uniform(0.5, 1.5))
 
         debug_port = get_free_port()
-        browser = await uc.start(config=create_browser_config(temp_dir, debug_port), no_sandbox=NO_SANDBOX)
+        browser = await uc.start(
+            config=create_browser_config(temp_dir, debug_port),
+            no_sandbox=NO_SANDBOX
+        )
         tab = await browser.get("about:blank")
 
         raw_ua = await tab.evaluate("navigator.userAgent")
@@ -97,6 +105,8 @@ async def async_worker_task(url: str, timeout: int) -> dict:
 
         _st_ts = time.time()
         while (time.time() - _st_ts) < timeout:
+            if SAVE_SS and (time.time() - _st_ts) < timeout-10:
+                await page.save_screenshot(f"/tmp/ss/ss_{time.strftime('%y_%m_%d_%H_%M_%S')}.png")
             try:
                 current_url = await tab.evaluate("window.location.href")
                 if "about:blank" in current_url:
