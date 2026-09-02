@@ -20,12 +20,12 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.9"
+	__version__ = "1.2.0"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
-HEADLESS = str(os.getenv("HEADLESS", "true")).lower() == "true"
+HEADLESS = str(os.getenv("HEADLESS", "false")).lower() == "true"
 BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
 PROXY_SERVER = os.getenv("PROXY_SERVER", None)
 
@@ -197,10 +197,10 @@ async def solve(
     q: SolveReq,
 ):
     start_timestamp = int(time.time() * 1000)
-    
+
     x_forward = req.headers.get("x-forwarded-for")
     origin_ip = x_forward.split(",").strip() if x_forward else req.headers.get("x-real-ip", req.client.host)
-    
+
     try:
         logging.info(f"Solving '{q.url}' timeout={q.timeout} from {origin_ip}")
 

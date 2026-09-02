@@ -12,16 +12,19 @@ import argparse
 import uvicorn
 
 DEFAULT_PORT = int(os.getenv("PORT", "8191"))
-
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
+HEADLESS = str(os.getenv("HEADLESS", "false")).lower() == "true"
+LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
+PROXY_SERVER = os.getenv("PROXY_SERVER", None)
 
 def parse_args(argv=None):
 	p = argparse.ArgumentParser(prog="noflare")
 	p.add_argument("--host", default="0.0.0.0", help="Host to bind to")
 	p.add_argument("--port", type=int, default=DEFAULT_PORT, help="Port to listen on")
-	p.add_argument("--headless", action="store_true", help="Run browser in headless mode")
+	p.add_argument("--headless", action="store_true", default=HEADLESS, help="Run browser in headless mode")
 	p.add_argument("--data-dir", dest="data_dir", help="User data directory for browser profile")
-	p.add_argument("--lang", "--locale", "--browser-locale", dest="lang", help="Language/locale to use, e.g. en-US")
-	p.add_argument("--proxy", dest="proxy", help="Proxy server URL (e.g. http://host:port)")
+	p.add_argument("--lang", "--locale", "--browser-locale", dest="lang", default=LOCALE, help="Language/locale to use, e.g. en-US")
+	p.add_argument("--proxy", dest="proxy", default=PROXY_SERVER, help="Proxy server URL (e.g. http://host:port)")
 	p.add_argument("--debug", action="store_true", help="Run with reload and debug logging")
 	return p.parse_args(argv)
 
@@ -29,12 +32,10 @@ def parse_args(argv=None):
 def main(argv=None):
 	args = parse_args(argv)
 
-	if args.headless:
-		os.environ["HEADLESS"] = "true"
+	os.environ["HEADLESS"] = str(args.headless)
+	os.environ["BROWSER_LOCALE"] = args.lang
 	if args.data_dir:
 		os.environ["DATA_DIR"] = args.data_dir
-	if args.lang:
-		os.environ["BROWSER_LOCALE"] = args.lang
 	if args.proxy:
 		os.environ["PROXY_SERVER"] = args.proxy
 
