@@ -9,7 +9,6 @@ ENV PORT=8191 \
     UV_DYNAMIC_VERSIONING_BYPASS=1.2.3 \
     DISPLAY=:99
 
-# Combine apt installations to reduce layers and install dumb-init for PID 1 handling
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     wget \
@@ -23,10 +22,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnss3 \
     libcups2 \
     dumb-init \
-    libasound2 \
     libxrandr2 \
+    libasound2* \
     libatk1.0-0 \
-    libgconf-2-4 \
     libxkbcommon0 \
     libxcomposite1 \
     fonts-liberation \
