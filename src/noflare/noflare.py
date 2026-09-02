@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.4"
+	__version__ = "1.1.5"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -193,6 +193,7 @@ def worker_entrypoint(url: str, timeout: int) -> dict:
     return asyncio.run(async_worker_task(url, timeout))
 
 
+@app.post("/")
 @app.post("/v1")
 async def solve(req: SolveRequest):
     start_timestamp = int(time.time() * 1000)
@@ -228,10 +229,15 @@ async def solve(req: SolveRequest):
             }
         )
 
+@app.get("/")
 @app.get("/health")
 async def health_check():
     return {
         "status": "ok",
+        "version": __version__,
+        "headless": HEADLESS,
+        "max_workers": MAX_WORKERS,
         "timestamp": int(time.time() * 1000),
-        "version": __version__
+        "browser_locale": BROWSER_LOCALE,
+        "proxy_server": PROXY_SERVER
     }
