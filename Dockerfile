@@ -2,11 +2,13 @@ FROM python:3.11-slim
 
 ENV PORT=8191 \
     HEADLESS=false \
-    DATA_DIR=/data/noflare \
     PYTHONUNBUFFERED=1 \
+    DATA_DIR=/data/noflare \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_DYNAMIC_VERSIONING_BYPASS=1.0.0
+    UV_DYNAMIC_VERSIONING_BYPASS=1.1.6 \
+    DISPLAY=:99
 
+# Combine apt installations to reduce layers and install dumb-init for PID 1 handling
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     wget \
@@ -25,11 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb \
     xauth \
     unzip \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y --no-install-recommends wget gnupg \
+    dumb-init \
     && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && (dpkg -i google-chrome-stable_current_amd64.deb || apt-get install -y --no-install-recommends -f) \
+    && apt-get install -y --no-install-recommends ./google-chrome-stable_current_amd64.deb \
     && rm google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
@@ -45,4 +45,6 @@ EXPOSE 8191
 
 VOLUME ["/data/noflare"]
 
-CMD ["xvfb-run", "-a", "python", "-m", "noflare"]
+ENTRYPOINT ["dumb-init", "--"]
+
+CMD ["xvfb-run", "-a", "-s", "-screen 0 1280x1024x24", "python", "-m", "noflare"]
