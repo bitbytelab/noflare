@@ -28,18 +28,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxkbcommon0 \
     libxcomposite1 \
     fonts-liberation \
-    libatk-bridge2.0-0
-
-RUN wget -q -O - https://google.com | apt-key add - \
-    && echo "deb [arch=amd64] http://google.com stable main" >> /etc/apt/sources.list.d/google.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable --no-install-recommends \
+    libatk-bridge2.0-0 \
+    && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && (dpkg -i google-chrome-stable_current_amd64.deb || apt-get install -y --no-install-recommends -f) \
+    && rm google-chrome-stable_current_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
-
-#    && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-#    && (dpkg -i google-chrome-stable_current_amd64.deb || apt-get install -y --no-install-recommends -f) \
-#    && rm google-chrome-stable_current_amd64.deb \
-#    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
