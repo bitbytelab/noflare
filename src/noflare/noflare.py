@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.2.3"
+	__version__ = "1.2.4"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -59,10 +59,10 @@ def get_free_port() -> int:
 
 def create_browser_config(temp_profile_dir: str, debug_port: int) -> uc.Config:
     config = uc.Config()
+    config.port = debug_port
     config.lang = BROWSER_LOCALE
     config.headless = HEADLESS
     config.user_data_dir = temp_profile_dir
-    config.port = debug_port
 
     config.add_argument("--disable-gpu")
     config.add_argument("--no-first-run")
@@ -71,11 +71,8 @@ def create_browser_config(temp_profile_dir: str, debug_port: int) -> uc.Config:
     config.add_argument("--disable-dev-shm-usage")
 
     if NO_SANDBOX:
-        config.add_argument("--no-sandbox")
+        config.sandbox = False
         config.add_argument("--disable-setuid-sandbox")
-
-    if PROXY_SERVER:
-        config.add_argument(f"--proxy-server={PROXY_SERVER}")
 
     return config
 
@@ -89,10 +86,7 @@ async def async_worker_task(url: str, timeout: int) -> dict:
         await asyncio.sleep(random.uniform(0.5, 1.5))
 
         debug_port = get_free_port()
-        browser = await uc.start(
-            config=create_browser_config(temp_dir, debug_port),
-            no_sandbox=NO_SANDBOX
-        )
+        browser = await uc.start(config=create_browser_config(temp_dir, debug_port))
         tab = await browser.get("about:blank")
 
         raw_ua = await tab.evaluate("navigator.userAgent")
@@ -209,11 +203,12 @@ async def solve(
 ):
     start_timestamp = int(time.time() * 1000)
 
-    x_forward = req.headers.get("x-forwarded-for")
-    origin_ip = x_forward.split(",").strip() if x_forward else req.headers.get("x-real-ip", req.client.host)
 
     try:
-        logging.info(f"Solving '{q.url}' timeout={q.timeout} from {origin_ip}")
+        x_forward = req.headers.get("x-forwarded-for")
+        origin_ip = x_forward.split(",").strip() if x_forward else req.headers.get("x-real-ip", req.client.host)
+        
+        logging.info(f"Solving X '{q.url}' timeout={q.timeout} from {origin_ip}")
 
         loop = asyncio.get_running_loop()
         solution = await loop.run_in_executor(thread_pool, worker_entrypoint, q.url, q.timeout)
