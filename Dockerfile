@@ -6,7 +6,7 @@ ENV PORT=8191 \
     PYTHONUNBUFFERED=1 \
     DATA_DIR=/data/noflare \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_DYNAMIC_VERSIONING_BYPASS=1.2.4 \
+    UV_DYNAMIC_VERSIONING_BYPASS=1.2.5 \
     DISPLAY=:99
 
 RUN apt-get update && apt-get install -y --no-install-recommends \

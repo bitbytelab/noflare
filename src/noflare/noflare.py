@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.2.4"
+	__version__ = "1.2.5"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -100,7 +100,7 @@ async def async_worker_task(url: str, timeout: int) -> dict:
         _st_ts = time.time()
         while (time.time() - _st_ts) < timeout:
             if SAVE_SS and (time.time() - _st_ts) < timeout-10:
-                await page.save_screenshot(f"/tmp/ss/ss_{time.strftime('%y_%m_%d_%H_%M_%S')}.png")
+                await tab.save_screenshot(f"/tmp/ss/ss_{time.strftime('%y_%m_%d_%H_%M_%S')}.png")
             try:
                 current_url = await tab.evaluate("window.location.href")
                 if "about:blank" in current_url:
