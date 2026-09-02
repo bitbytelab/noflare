@@ -5,7 +5,7 @@ ENV PORT=8191 \
     PYTHONUNBUFFERED=1 \
     DATA_DIR=/data/noflare \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_DYNAMIC_VERSIONING_BYPASS=1.1.7 \
+    UV_DYNAMIC_VERSIONING_BYPASS=1.1.8 \
     DISPLAY=:99
 
 # Combine apt installations to reduce layers and install dumb-init for PID 1 handling

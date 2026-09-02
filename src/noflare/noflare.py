@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.1.7"
+	__version__ = "1.1.8"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
@@ -61,7 +61,6 @@ def create_browser_config(temp_profile_dir: str, debug_port: int) -> uc.Config:
     config = uc.Config()
     config.lang = BROWSER_LOCALE
     config.headless = HEADLESS
-    config.no_sandbox = True
     config.user_data_dir = temp_profile_dir
     config.port = debug_port
 
@@ -86,7 +85,7 @@ async def async_worker_task(url: str, timeout: int) -> dict:
         await asyncio.sleep(random.uniform(0.5, 1.5))
 
         debug_port = get_free_port()
-        browser = await uc.start(config=create_browser_config(temp_dir, debug_port))
+        browser = await uc.start(config=create_browser_config(temp_dir, debug_port), no_sandbox=True)
         tab = await browser.get("about:blank")
 
         raw_ua = await tab.evaluate("navigator.userAgent")
