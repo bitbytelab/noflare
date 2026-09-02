@@ -16,6 +16,7 @@ MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
 HEADLESS = str(os.getenv("HEADLESS", "false")).lower() == "true"
 LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
 PROXY_SERVER = os.getenv("PROXY_SERVER", None)
+NO_SANDBOX = str(os.getenv("NO_SANDBOX", "false")).lower() == "true"
 
 def parse_args(argv=None):
 	p = argparse.ArgumentParser(prog="noflare")
@@ -25,6 +26,7 @@ def parse_args(argv=None):
 	p.add_argument("--data-dir", dest="data_dir", help="User data directory for browser profile")
 	p.add_argument("--lang", "--locale", "--browser-locale", dest="lang", default=LOCALE, help="Language/locale to use, e.g. en-US")
 	p.add_argument("--proxy", dest="proxy", default=PROXY_SERVER, help="Proxy server URL (e.g. http://host:port)")
+	p.add_argument("--no-sandbox", action="store_true", help="No Sandbox Mode default: False")
 	p.add_argument("--debug", action="store_true", help="Run with reload and debug logging")
 	return p.parse_args(argv)
 
@@ -38,6 +40,8 @@ def main(argv=None):
 		os.environ["DATA_DIR"] = args.data_dir
 	if args.proxy:
 		os.environ["PROXY_SERVER"] = args.proxy
+	if args.no_sandbox:
+		os.environ["NO_SANDBOX"] = "true"
 
 	log_level = "debug" if args.debug else os.getenv("LOG_LEVEL", "info").lower()
 	if args.debug:

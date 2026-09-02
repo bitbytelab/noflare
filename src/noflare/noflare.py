@@ -20,14 +20,15 @@ from fastapi.responses import JSONResponse
 try:
 	__version__ = version("noflare")
 except PackageNotFoundError:
-	__version__ = "1.2.1"
+	__version__ = "1.2.2"
 
 thread_pool = None
 # --- Thread Pool Sizing ---
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
-HEADLESS = str(os.getenv("HEADLESS", "false")).lower() == "true"
-BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
 PROXY_SERVER = os.getenv("PROXY_SERVER", None)
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
+BROWSER_LOCALE = os.getenv("BROWSER_LOCALE", "en-US")
+HEADLESS = str(os.getenv("HEADLESS", "false")).lower() == "true"
+NO_SANDBOX = str(os.getenv("NO_SANDBOX", "false")).lower() == "true"
 
 _fmt = "%(levelname)-9s %(threadName)s - %(message)s"
 logging.basicConfig(level=logging.INFO, format=_fmt)
@@ -40,7 +41,7 @@ class SolveReq(BaseModel):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global thread_pool
-    thread_pool = ThreadPoolExecutor(max_workers=MAX_WORKERS, thread_name_prefix="ChromeWorker")
+    thread_pool = ThreadPoolExecutor(max_workers=MAX_WORKERS, thread_name_prefix="Worker")
     logging.info(f"NoFlare v{__version__} Initialized ThreadPoolExecutor with {MAX_WORKERS} workers.")
 
     yield
@@ -83,7 +84,7 @@ async def async_worker_task(url: str, timeout: int) -> dict:
         await asyncio.sleep(random.uniform(0.5, 1.5))
 
         debug_port = get_free_port()
-        browser = await uc.start(config=create_browser_config(temp_dir, debug_port))
+        browser = await uc.start(config=create_browser_config(temp_dir, debug_port), no_sandbox=NO_SANDBOX)
         tab = await browser.get("about:blank")
 
         raw_ua = await tab.evaluate("navigator.userAgent")

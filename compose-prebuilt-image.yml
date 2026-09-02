@@ -9,6 +9,7 @@ services:
       HOST: 0.0.0.0
       MAX_WORKERS: 5
       HEADLESS: 'false'
+      NO_SANDBOX: 'true'
       BROWSER_LOCALE: en-US
     deploy:
       replicas: 1
