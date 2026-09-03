@@ -5,12 +5,15 @@ services:
     container_name: noflare
     ports: ['8191:8191']
     environment:
+      MAX_WORKERS: 4
       PORT: 8191
       HOST: 0.0.0.0
-      MAX_WORKERS: 5
+      DEBUG: 'false'
+      LOCALE: 'en-US'
+      SANDBOX: 'false'
       HEADLESS: 'false'
-      NO_SANDBOX: 'true'
-      BROWSER_LOCALE: en-US
+      LOG_LEVEL: 'INFO'
+      DISABLE_MEDIA: 'true'
     deploy:
       replicas: 1
       restart_policy: { condition: any, delay: 10s, window: 60s }

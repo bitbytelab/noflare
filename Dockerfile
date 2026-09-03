@@ -1,12 +1,12 @@
 FROM python:3.11-slim
 
 ENV PORT=8191 \
+    SANDBOX=false \
     HEADLESS=false \
-    NO_SANDBOX=true \
     PYTHONUNBUFFERED=1 \
     DATA_DIR=/data/noflare \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_DYNAMIC_VERSIONING_BYPASS=1.2.5 \
+    UV_DYNAMIC_VERSIONING_BYPASS=1.3.0 \
     DISPLAY=:99
 
 RUN apt-get update && apt-get install -y --no-install-recommends \

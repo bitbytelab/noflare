@@ -219,3 +219,5 @@ __marimo__/
 
 # Additional
 .env
+.local
+local/*

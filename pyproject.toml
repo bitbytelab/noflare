@@ -30,7 +30,7 @@ dependencies = [
     "fastapi",
     "uvicorn",
     "nodriver",
-    "python-dotenv",
+    "pydantic",
 ]
 
 [project.urls]
