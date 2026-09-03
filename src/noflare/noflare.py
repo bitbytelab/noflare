@@ -89,7 +89,7 @@ async def async_worker_task(url: str, timeout: int, start_timestamp: int, disabl
 
     asyncio.get_running_loop().set_exception_handler(
         lambda _l, ctx: None
-        if isinstance(ctx.get("exception"), ConnectionError)
+        if type(ctx.get("exception")).__name__ in ("ConnectionError", "ProtocolException")
         else _l.default_exception_handler(ctx)
     )
 
