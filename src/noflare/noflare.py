@@ -263,6 +263,17 @@ async def solve(req: Request, q: SolveReq):
         if "error" in solution:
             raise Exception(solution["error"])
 
+        _ = {
+            "status": "ok",
+            "message": "Challenge solved!",
+            "startTimestamp": start_timestamp,
+            "endTimestamp": int(time.time() * 1000),
+            "version": __version__,
+            "solution": solution
+        }
+        logging.debug(f"response: {_}")
+        return _
+
         return JSONResponse(
             status_code=200,
             content={
