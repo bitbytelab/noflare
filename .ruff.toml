@@ -4,14 +4,12 @@
 fix = false
 indent-width = 4
 line-length = 120                    # Wider code readability
-target-version = "py314"             # Set your Python version
+target-version = "py311"             # Set your Python version
 preview = false                      # Disable experimental rules (safe default)
 
 extend-exclude = [
-  ".git", ".venv", "venv", "env",
-  "build", "dist", "__pycache__",
-  ".mypy_cache", ".ruff_cache", ".pytest_cache",
-  ".run", ".idea", ".github", "__pycache__",
+  ".git", ".venv", "venv", "env", "build", "dist", "__pycache__", "__pycache__"
+  ".run", ".idea", ".github", ".mypy_cache", ".ruff_cache", ".pytest_cache",
 ]
 
 [format]
